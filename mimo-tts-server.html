@@ -1,0 +1,58 @@
+<!-- MiMo TTS Server 配置节点 -->
+<script type="text/html" data-template-name="mimo-tts-server">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name">名称</span></label>
+        <input type="text" id="node-config-input-name" placeholder="MiMo TTS Server" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apiKey"><i class="fa fa-key"></i> API Key</label>
+        <input type="password" id="node-config-input-apiKey" placeholder="sk-xxxxxxxx" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-baseUrl"><i class="fa fa-globe"></i> Base URL</label>
+        <input type="text" id="node-config-input-baseUrl" placeholder="https://api.xiaomimimo.com/v1" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-model"><i class="fa fa-cube"></i> 模型</label>
+        <select id="node-config-input-model" style="width: 70%;">
+            <option value="mimo-v2-tts">mimo-v2-tts</option>
+            <option value="mimo-v1-tts">mimo-v1-tts</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="mimo-tts-server">
+    <p>MiMo TTS 服务器配置节点，集中管理 API 凭证和连接参数。</p>
+    <h3>配置项</h3>
+    <dl class="message-properties">
+        <dt>名称 <span class="property-type">string</span></dt>
+        <dd>配置节点名称，便于识别</dd>
+        <dt>API Key <span class="property-type">password</span></dt>
+        <dd>小米 MiMo 平台 API Key（加密存储）</dd>
+        <dt>Base URL <span class="property-type">string</span></dt>
+        <dd>API 服务器地址，默认 <code>https://api.xiaomimimo.com/v1</code></dd>
+        <dt>模型 <span class="property-type">string</span></dt>
+        <dd>TTS 模型，默认 <code>mimo-v2-tts</code></dd>
+    </dl>
+    <h3>说明</h3>
+    <p>多个 MiMo TTS 节点可共享同一个 Server 配置，避免重复输入 API Key。</p>
+    <p>API Key 可在 <a href="https://platform.xiaomimimo.com" target="_blank">小米 MiMo 开放平台</a> 获取。</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mimo-tts-server', {
+        category: 'config',
+        defaults: {
+            name: { value: '' },
+            baseUrl: { value: 'https://api.xiaomimimo.com/v1', required: true },
+            model: { value: 'mimo-v2-tts', required: true },
+        },
+        credentials: {
+            apiKey: { type: 'password' },
+        },
+        label: function () {
+            return this.name || 'MiMo TTS Server';
+        },
+        icon: 'font-awesome/fa-server',
+    });
+</script>

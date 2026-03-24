@@ -1,0 +1,132 @@
+<!-- MiMo TTS 节点 -->
+<script type="text/html" data-template-name="mimo-tts">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> 名称</label>
+        <input type="text" id="node-input-name" placeholder="MiMo TTS" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-voice"><i class="fa fa-microphone"></i> 音色</label>
+        <select id="node-input-voice" style="width: 70%;">
+            <option value="mimo_default">MiMo-默认</option>
+            <option value="default_zh">MiMo-中文女声</option>
+            <option value="default_en">MiMo-英文女声</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-format"><i class="fa fa-file-audio-o"></i> 输出格式</label>
+        <select id="node-input-format" style="width: 70%;">
+            <option value="wav">wav</option>
+            <option value="mp3">mp3</option>
+            <option value="pcm">pcm</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-style"><i class="fa fa-commenting"></i> 发音风格</label>
+        <input type="text" id="node-input-style" placeholder="如：开心、东北话、悄悄话" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputDir"><i class="fa fa-folder"></i> 输出目录</label>
+        <input type="text" id="node-input-outputDir" placeholder="/tmp/mimo-tts" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-filenameMode"><i class="fa fa-file"></i> 文件名模式</label>
+        <select id="node-input-filenameMode" style="width: 70%;">
+            <option value="random">前缀 + 随机后缀</option>
+            <option value="fixed">固定文件名</option>
+        </select>
+    </div>
+    <div class="form-row" id="row-prefix">
+        <label for="node-input-filenamePrefix"><i class="fa fa-prefix"></i> 文件名前缀</label>
+        <input type="text" id="node-input-filenamePrefix" placeholder="mimo_tts_" style="width: 70%;">
+    </div>
+    <div class="form-row" id="row-fixedname" style="display:none;">
+        <label for="node-input-fixedFilename"><i class="fa fa-file-text"></i> 固定文件名</label>
+        <input type="text" id="node-input-fixedFilename" placeholder="output.wav" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-detailText"><i class="fa fa-align-left"></i> 音频标签细粒度控制文本</label>
+        <textarea id="node-input-detailText" rows="4" placeholder="（寒冷导致的急促呼吸）呼——呼——这、这大兴安岭的雪……（咳嗽）简直能把人骨头冻透了……别、别停下，走，快走。" style="width: 70%;"></textarea>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="mimo-tts">
+    <p>小米 MiMo-V2-TTS 语音合成节点，将文本转换为自然流畅的语音。</p>
+    <h3>输入</h3>
+    <dl class="message-properties">
+        <dt>msg.payload <span class="property-type">string</span></dt>
+        <dd>待合成的文本内容</dd>
+        <dt>msg.voice <span class="property-type">string</span></dt>
+        <dd>覆盖音色设置，如 "default_zh"</dd>
+        <dt>msg.format <span class="property-type">string</span></dt>
+        <dd>覆盖输出格式，如 "mp3"</dd>
+        <dt>msg.style <span class="property-type">string</span></dt>
+        <dd>覆盖发音风格，如 "开心"、"东北话"</dd>
+        <dt>msg.outputDir <span class="property-type">string</span></dt>
+        <dd>覆盖输出目录</dd>
+    </dl>
+    <h3>输出</h3>
+    <dl class="message-properties">
+        <dt>msg.payload <span class="property-type">buffer</span></dt>
+        <dd>音频二进制数据</dd>
+        <dt>msg.filename <span class="property-type">string</span></dt>
+        <dd>保存的文件完整路径</dd>
+        <dt>msg.format <span class="property-type">string</span></dt>
+        <dd>音频格式</dd>
+        <dt>msg.size <span class="property-type">number</span></dt>
+        <dd>文件大小（字节）</dd>
+        <dt>msg.duration <span class="property-type">number</span></dt>
+        <dd>估算音频时长（毫秒）</dd>
+    </dl>
+    <h3>支持的发音风格</h3>
+    <ul>
+        <li>语速：变快、变慢</li>
+        <li>情绪：开心、悲伤、生气</li>
+        <li>角色：孙悟空、林黛玉</li>
+        <li>风格：悄悄话、夹子音、台湾腔</li>
+        <li>方言：东北话、四川话、河南话、粤语</li>
+        <li>特殊：唱歌</li>
+    </ul>
+    <h3>详情</h3>
+    <p>需先配置 <b>MiMo TTS Server</b> 配置节点（类型为 config），填入 API Key、Base URL 和模型。</p>
+    <p>优先级：msg参数 > 节点配置 > 默认值</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mimo-tts', {
+        category: 'TTS',
+        color: '#DEBD5C',
+        defaults: {
+            name: { value: '' },
+            server: { type: 'mimo-tts-server', required: true },
+            voice: { value: 'mimo_default' },
+            format: { value: 'wav' },
+            style: { value: '' },
+            outputDir: { value: '/tmp/mimo-tts' },
+            filenameMode: { value: 'random' },
+            filenamePrefix: { value: 'mimo_tts_' },
+            fixedFilename: { value: 'output.wav' },
+            detailText: { value: '' },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'font-awesome/fa-comment',
+        label: function () {
+            return this.name || 'MiMo TTS';
+        },
+        oneditprepare: function () {
+            const mode = this.filenameMode || 'random';
+            function toggleFilenameRows(val) {
+                $('#row-prefix').toggle(val === 'random');
+                $('#row-fixedname').toggle(val === 'fixed');
+            }
+            toggleFilenameRows(mode);
+            $('#node-input-filenameMode').on('change', function () {
+                toggleFilenameRows($(this).val());
+            });
+        },
+    });
+</script>
