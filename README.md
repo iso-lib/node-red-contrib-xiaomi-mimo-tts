@@ -15,6 +15,7 @@ npm install /path/to/node-red-contrib-xiaomi-mimo-tts
 
 - **MiMo TTS Server**（配置节点）：集中管理 API Key、Base URL、模型。多个 MiMo TTS 节点可共享同一个 Server 配置，避免重复输入。
 - **MiMo TTS**（功能节点）：负责语音合成，只需配置音色、格式、风格等运行参数。
+- **API Key** 登录[小米MiMo平台](https://platform.xiaomimimo.com/#/console/api-keys)获取
 
 ## 节点配置
 
